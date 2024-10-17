@@ -18,8 +18,6 @@ use function array_pop;
 use function array_reverse;
 use function arsort;
 use function asort;
-use function call_user_func;
-use function call_user_func_array;
 use function count;
 use function floor;
 use function implode;
@@ -128,7 +126,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $valueCallback = static::valueExtractor($valuePath);
 
         [$sum, $count] = $this->reduce(function(array $result, mixed $item, int|string $key) use ($valueCallback): array {
-            $value = call_user_func_array($valueCallback, [$item, $key]);
+            $value = $valueCallback($item, $key);
 
             if ($value !== null) {
                 $result[0] += $value;
@@ -240,8 +238,8 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         return new static(function() use ($keyCallback, $valueCallback): mixed {
             foreach ($this as $key => $item) {
-                $value = call_user_func_array($valueCallback, [$item, $key]);
-                $key = call_user_func_array($keyCallback, [$item, $key]);
+                $value = $valueCallback($item, $key);
+                $key = $keyCallback($item, $key);
 
                 if (is_object($key)) {
                     $key = (string) $key;
@@ -280,7 +278,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             $results = [];
 
             foreach ($this as $key => $item) {
-                $key = call_user_func_array($keyCallback, [$item, $key]);
+                $key = $keyCallback($item, $key);
 
                 $results[$key] ??= 0;
                 $results[$key]++;
@@ -322,7 +320,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     public function each(Closure $callback): static
     {
         foreach ($this as $key => $item) {
-            call_user_func_array($callback, [$item, $key]);
+            $callback($item, $key);
         }
 
         return $this;
@@ -337,7 +335,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     public function every(Closure $callback): bool
     {
         foreach ($this as $key => $item) {
-            if (!call_user_func_array($callback, [$item, $key])) {
+            if (!$callback($item, $key)) {
                 return false;
             }
         }
@@ -376,7 +374,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         return new static(function() use ($valueCallback): Generator {
             foreach ($this as $key => $item) {
-                yield call_user_func_array($valueCallback, [$item, $key]);
+                yield $valueCallback($item, $key);
             }
         });
     }
@@ -391,7 +389,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         return new static(function() use ($callback): Generator {
             foreach ($this as $key => $item) {
-                if (!call_user_func_array($callback, [$item, $key])) {
+                if (!$callback($item, $key)) {
                     continue;
                 }
 
@@ -409,7 +407,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     public function find(Closure $callback): mixed
     {
         foreach ($this as $key => $item) {
-            if (call_user_func_array($callback, [$item, $key])) {
+            if ($callback($item, $key)) {
                 return $item;
             }
         }
@@ -488,7 +486,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             return new ArrayIterator($this->source);
         }
 
-        $data = call_user_func($this->source);
+        $data = ($this->source)();
 
         if (is_array($data) || $data === null) {
             return new ArrayIterator($data ?? []);
@@ -515,7 +513,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             $results = [];
 
             foreach ($this as $key => $item) {
-                $key = call_user_func_array($keyCallback, [$item, $key]);
+                $key = $keyCallback($item, $key);
 
                 $results[$key] ??= [];
                 $results[$key][] = $item;
@@ -548,7 +546,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         return new static(function() use ($keyCallback): mixed {
             foreach ($this as $key => $item) {
-                $key = call_user_func_array($keyCallback, [$item, $key]);
+                $key = $keyCallback($item, $key);
 
                 if (is_object($key)) {
                     $key = (string) $key;
@@ -690,7 +688,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
                     $children = $item[$nestingKey] ?? null;
 
                     if (is_array($children) || $children instanceof Traversable) {
-                        $nestedItems = call_user_func_array($getResults, [$children, $depth + 1]);
+                        $nestedItems = $getResults($children, $depth + 1);
                         foreach ($nestedItems as $nestedItem) {
                             yield $nestedItem;
                         }
@@ -702,7 +700,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
                 }
             };
 
-            yield from call_user_func_array($getResults, [$this]);
+            yield from $getResults($this);
         });
     }
 
@@ -716,7 +714,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         return new static(function() use ($callback): Generator {
             foreach ($this as $key => $item) {
-                yield $key => call_user_func_array($callback, [$item, $key]);
+                yield $key => $callback($item, $key);
             }
         });
     }
@@ -733,7 +731,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         return $this->reduce(
             function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
-                $value = call_user_func_array($valueCallback, [$item, $key]);
+                $value = $valueCallback($item, $key);
 
                 return $acc === null || $value > $acc ? $value : $acc;
             }
@@ -804,7 +802,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         return $this->reduce(
             function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
-                $value = call_user_func_array($valueCallback, [$item, $key]);
+                $value = $valueCallback($item, $key);
 
                 return $acc === null || $value < $acc ? $value : $acc;
             }
@@ -829,7 +827,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             $parents = [];
 
             foreach ($items as $key => &$item) {
-                $id = call_user_func_array($idCallback, [$item, $key]);
+                $id = $idCallback($item, $key);
 
                 $item[$nestingKey] = [];
                 $parents[$id] = &$item;
@@ -837,7 +835,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
             $results = [];
             foreach ($items as $key => &$item) {
-                $parentId = call_user_func_array($parentCallback, [$item, $key]);
+                $parentId = $parentCallback($item, $key);
 
                 if ($parentId && array_key_exists($parentId, $parents)) {
                     $parents[$parentId][$nestingKey][] = &$item;
@@ -897,8 +895,8 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         return new static(function() use ($valueCallback, $keyCallback, $prefix, $nestingKey): Generator {
             $getResults = function(array|Traversable $items, int $depth = 0) use ($valueCallback, $keyCallback, $prefix, $nestingKey, &$getResults): Generator {
                 foreach ($items as $key => $item) {
-                    $value = call_user_func_array($valueCallback, [$item, $key]);
-                    $key = call_user_func_array($keyCallback, [$item, $key]);
+                    $value = $valueCallback($item, $key);
+                    $key = $keyCallback($item, $key);
 
                     $value = (string) $value;
 
@@ -911,7 +909,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
                     $children = $item[$nestingKey] ?? null;
 
                     if (is_array($children) || $children instanceof Traversable) {
-                        $nestedItems = call_user_func_array($getResults, [$children, $depth + 1]);
+                        $nestedItems = $getResults($children, $depth + 1);
                         foreach ($nestedItems as $nestedKey => $nestedItem) {
                             yield $nestedKey => $nestedItem;
                         }
@@ -919,7 +917,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
                 }
             };
 
-            yield from call_user_func_array($getResults, [$this]);
+            yield from $getResults($this);
         });
     }
 
@@ -944,7 +942,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         $acc = $initial;
         foreach ($this as $key => $item) {
-            $acc = call_user_func_array($callback, [$acc, $item, $key]);
+            $acc = $callback($acc, $item, $key);
         }
 
         return $acc;
@@ -1016,7 +1014,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         return new static(function() use ($callback): Generator {
             foreach ($this as $key => $item) {
-                if (!call_user_func_array($callback, [$item, $key])) {
+                if (!$callback($item, $key)) {
                     continue;
                 }
 
@@ -1083,7 +1081,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $items = $this->toArray();
 
         foreach ($items as $key => $item) {
-            $results[$key] = call_user_func_array($valueCallback, [$item, $key]);
+            $results[$key] = $valueCallback($item, $key);
         }
 
         if ($descending) {
@@ -1110,7 +1108,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $valueCallback = static::valueExtractor($valuePath);
 
         return $this->reduce(
-            fn(mixed $acc, mixed $item, int|string $key): mixed => $acc + call_user_func_array($valueCallback, [$item, $key]),
+            fn(mixed $acc, mixed $item, int|string $key): mixed => $acc + $valueCallback($item, $key),
             0
         );
     }
@@ -1147,7 +1145,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         return new static(function() use ($callback): Generator {
             foreach ($this as $key => $item) {
-                if (call_user_func_array($callback, [$item, $key])) {
+                if ($callback($item, $key)) {
                     break;
                 }
 
@@ -1216,7 +1214,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             $exists = [];
 
             foreach ($this as $key => $item) {
-                $value = call_user_func_array($valueCallback, [$item, $key]);
+                $value = $valueCallback($item, $key);
 
                 if (in_array($value, $exists, $strict)) {
                     continue;
@@ -1288,7 +1286,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
      */
     protected static function negate(Closure $callback): Closure
     {
-        return fn(...$args): bool => !call_user_func_array($callback, $args);
+        return fn(...$args): bool => !$callback(...$args);
     }
 
     /**
