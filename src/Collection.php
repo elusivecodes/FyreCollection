@@ -327,7 +327,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
-     * Determine if every item in the collection passes a callback.
+     * Determine whether every item in the collection passes a callback.
      *
      * @param Closure $callback The callback.
      * @return bool TRUE if every item in the collection passes a callback, otherwise FALSE.
@@ -524,7 +524,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
-     * Check if a given value exists in the collection.
+     * Determine whether a given value exists in the collection.
      *
      * @param mixed $value The value to check for.
      * @return bool Whether the given value exists in the collection.
@@ -575,7 +575,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
-     * Determine if the collection is empty.
+     * Determine whether the collection is empty.
      *
      * @return bool TRUE if the collection is empty, otherwise FALSE.
      */
@@ -849,7 +849,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
-     * Determine if no items in the collection pass a callback.
+     * Determine whether no items in the collection pass a callback.
      *
      * @param Closure $callback The callback.
      * @return bool TRUE if no items in the collection pass a callback, otherwise FALSE.
@@ -1035,7 +1035,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
-     * Determine if some items in the collection pass a callback.
+     * Determine whether some items in the collection pass a callback.
      *
      * @param Closure $callback The callback.
      * @return bool TRUE if some items in the collection pass a callback, otherwise FALSE.

@@ -151,7 +151,7 @@ $collection->each($callback);
 
 **Every**
 
-Determine if every item in the collection passes a callback.
+Determine whether every item in the collection passes a callback.
 
 - `$callback` is a *Closure* that receives the item and key as arguments, and should return a boolean.
 
@@ -247,7 +247,7 @@ $groupBy = $collection->groupBy($keyPath);
 
 **Includes**
 
-Check if a given value exists in the collection.
+Determine whether a given value exists in the collection.
 
 - `$value` is the value to test for.
 
@@ -277,7 +277,7 @@ $indexOf = $collection->indexOf($value);
 
 **Is Empty**
 
-Determine if the collection is empty.
+Determine whether the collection is empty.
 
 ```php
 $isEmpty = $collection->isEmpty();
@@ -395,7 +395,7 @@ $nest = $collection->nest($idPath, $parentPath, $nestingKey);
 
 **None**
 
-Determine if no items in the collection pass a callback.
+Determine whether no items in the collection pass a callback.
 
 - `$callback` is a *Closure* that receives the item and key as arguments, and should return a boolean.
 
@@ -502,7 +502,7 @@ $skipWhile = $collection->skipWhile($callback);
 
 **Some**
 
-Determine if some items in the collection pass a callback.
+Determine whether some items in the collection pass a callback.
 
 - `$callback` is a *Closure* that receives the item and key as arguments, and should return a boolean.
 
