@@ -1,6 +1,8 @@
 # FyreCollection
 
-**FyreCollection** is a free, open-source collection library for *PHP*.
+**FyreCollection** is a free, open-source immutable collection library for *PHP*.
+
+It is a modern library, and features support for generators and lazy evaluation.
 
 
 ## Table Of Contents
