@@ -7,9 +7,9 @@ It is a modern library, and features support for generators and lazy evaluation.
 
 ## Table Of Contents
 - [Installation](#installation)
+- [Basic Usage](#basic-usage)
 - [Collection Creation](#collection-creation)
-- [Collection Iteration](#collection-iteration)
-- [Collection Methods](#collection-methods)
+- [Methods](#methods)
 
 
 
@@ -28,13 +28,22 @@ use Fyre\Collection\Collection;
 ```
 
 
-## Collection Creation
+## Basic Usage
 
 - `$source` can be either an array, a *Closure* that returns a *Generator*, or a *Traversable* or *JsonSerializable* object.
 
 ```php
 $collection = new Collection($source);
 ```
+
+The *Collection* is an implementation of an *Iterator* and can be used in a `foreach` loop.
+
+```php
+foreach ($collection AS $key => $value) { }
+```
+
+
+## Collection Creation
 
 **Empty**
 
@@ -56,16 +65,7 @@ $collection = Collection::range($from, $to);
 ```
 
 
-## Collection Iteration
-
-The *Collection* is an implementation of an *Iterator* and can be used in a `foreach` loop.
-
-```php
-foreach ($collection AS $key => $value) { }
-```
-
-
-## Collection Methods
+## Methods
 
 **Avg**
 
