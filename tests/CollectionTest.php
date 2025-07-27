@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace Tests;
 
 use Fyre\Collection\Collection;
+use Fyre\Utility\Traits\MacroTrait;
 use Generator;
 use PHPUnit\Framework\TestCase;
 
+use function class_uses;
 use function count;
 use function json_encode;
 
@@ -131,6 +133,14 @@ final class CollectionTest extends TestCase
         $this->assertSame(
             '{"a":1,"b":{"c":2}}',
             json_encode($collection)
+        );
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(Collection::class)
         );
     }
 

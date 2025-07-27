@@ -7,6 +7,7 @@ use ArrayAccess;
 use ArrayIterator;
 use Closure;
 use Countable;
+use Fyre\Utility\Traits\MacroTrait;
 use Generator;
 use Iterator;
 use IteratorAggregate;
@@ -45,6 +46,8 @@ use const SORT_STRING;
  */
 class Collection implements Countable, IteratorAggregate, JsonSerializable
 {
+    use MacroTrait;
+
     public const SORT_LOCALE = SORT_LOCALE_STRING;
 
     public const SORT_NATURAL = SORT_NATURAL;
