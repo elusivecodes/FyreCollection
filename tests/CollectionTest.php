@@ -5,12 +5,16 @@ namespace Tests;
 
 use Fyre\Collection\Collection;
 use Fyre\Utility\Traits\MacroTrait;
+use Fyre\Utility\Traits\StaticMacroTrait;
 use Generator;
 use PHPUnit\Framework\TestCase;
 
+use function array_diff;
 use function class_uses;
 use function count;
 use function json_encode;
+use function serialize;
+use function unserialize;
 
 use const JSON_PRETTY_PRINT;
 
@@ -83,6 +87,16 @@ final class CollectionTest extends TestCase
         );
     }
 
+    public function testDebug(): void
+    {
+        $collection = new Collection([1, 2, 3, 4]);
+
+        $this->assertSame(
+            ['count' => 4],
+            $collection->__debugInfo()
+        );
+    }
+
     public function testIterable(): void
     {
         $collection = new Collection(['a' => 1, 'b' => ['c' => 2]]);
@@ -138,9 +152,18 @@ final class CollectionTest extends TestCase
 
     public function testMacroable(): void
     {
-        $this->assertContains(
-            MacroTrait::class,
-            class_uses(Collection::class)
+        $this->assertEmpty(
+            array_diff([MacroTrait::class, StaticMacroTrait::class], class_uses(Collection::class))
+        );
+    }
+
+    public function testSerializable(): void
+    {
+        $collection = new Collection(['a' => 1, 'b' => ['c' => 2]]);
+
+        $this->assertSame(
+            $collection->toArray(),
+            unserialize(serialize($collection))->toArray()
         );
     }
 

@@ -8,10 +8,12 @@ use ArrayIterator;
 use Closure;
 use Countable;
 use Fyre\Utility\Traits\MacroTrait;
+use Fyre\Utility\Traits\StaticMacroTrait;
 use Generator;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Throwable;
 use Traversable;
 
 use function array_key_exists;
@@ -47,6 +49,7 @@ use const SORT_STRING;
 class Collection implements Countable, IteratorAggregate, JsonSerializable
 {
     use MacroTrait;
+    use StaticMacroTrait;
 
     public const SORT_LOCALE = SORT_LOCALE_STRING;
 
@@ -109,6 +112,34 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     }
 
     /**
+     * Get the debug info of the object.
+     *
+     * @return array The debug info.
+     */
+    public function __debugInfo(): array
+    {
+        try {
+            $count = $this->count();
+        } catch (Throwable) {
+            $count = 'Unknown';
+        }
+
+        return [
+            'count' => $count,
+        ];
+    }
+
+    /**
+     * Serialize the object.
+     *
+     * @return array The serialized data.
+     */
+    public function __serialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
      * Convert the collection to a JSON encoded string.
      *
      * @return string The JSON encoded string.
@@ -116,6 +147,16 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     public function __toString(): string
     {
         return $this->toJson();
+    }
+
+    /**
+     * Unserialize the object.
+     *
+     * @param array $data The serialized data.
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->__construct($data);
     }
 
     /**
