@@ -80,7 +80,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
      */
     public static function range(int $from, int $to): static
     {
-        return new static(function() use ($from, $to): Generator {
+        return new static(static function() use ($from, $to): Generator {
             if ($from <= $to) {
                 while ($from <= $to) {
                     yield $from++;
@@ -169,7 +169,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     {
         $valueCallback = static::valueExtractor($valuePath);
 
-        [$sum, $count] = $this->reduce(function(array $result, mixed $item, int|string $key) use ($valueCallback): array {
+        [$sum, $count] = $this->reduce(static function(array $result, mixed $item, int|string $key) use ($valueCallback): array {
             $value = $valueCallback($item, $key);
 
             if ($value !== null) {
@@ -196,7 +196,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
         $cache = [];
 
-        return new static(function() use ($iterator, &$iteratorIndex, &$cache): Generator {
+        return new static(static function() use ($iterator, &$iteratorIndex, &$cache): Generator {
             $index = 0;
             while (true) {
                 if (array_key_exists($index, $cache)) {
@@ -575,7 +575,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
      */
     public function includes(mixed $value): bool
     {
-        return $this->some(fn(mixed $item): bool => $item === $value);
+        return $this->some(static fn(mixed $item): bool => $item === $value);
     }
 
     /**
@@ -665,7 +665,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        return array_map(function(mixed $item): mixed {
+        return array_map(static function(mixed $item): mixed {
             if ($item instanceof JsonSerializable) {
                 return $item->jsonSerialize();
             }
@@ -774,7 +774,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $valueCallback = static::valueExtractor($valuePath);
 
         return $this->reduce(
-            function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
+            static function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
                 $value = $valueCallback($item, $key);
 
                 return $acc === null || $value > $acc ? $value : $acc;
@@ -794,7 +794,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
             $this :
             $this->extract($valuePath);
 
-        $values = $values->filter(fn(mixed $value): bool => $value !== null)
+        $values = $values->filter(static fn(mixed $value): bool => $value !== null)
             ->sort()
             ->toList();
 
@@ -845,7 +845,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $valueCallback = static::valueExtractor($valuePath);
 
         return $this->reduce(
-            function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
+            static function(mixed $acc, mixed $item, int|string $key) use ($valueCallback): mixed {
                 $value = $valueCallback($item, $key);
 
                 return $acc === null || $value < $acc ? $value : $acc;
@@ -1152,7 +1152,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $valueCallback = static::valueExtractor($valuePath);
 
         return $this->reduce(
-            fn(mixed $acc, mixed $item, int|string $key): mixed => $acc + $valueCallback($item, $key),
+            static fn(mixed $acc, mixed $item, int|string $key): mixed => $acc + $valueCallback($item, $key),
             0
         );
     }
@@ -1295,14 +1295,14 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
         $collections = [
             $this,
             ...array_map(
-                fn(array|Traversable $iterable): Collection => new static($iterable),
+                static fn(array|Traversable $iterable): Collection => new static($iterable),
                 $iterables
             ),
         ];
 
-        return new static(function() use ($collections): Generator {
+        return new static(static function() use ($collections): Generator {
             $iterators = array_map(
-                fn(Collection $item): Iterator => $item->getIterator(),
+                static fn(Collection $item): Iterator => $item->getIterator(),
                 $collections
             );
 
@@ -1330,7 +1330,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
      */
     protected static function negate(Closure $callback): Closure
     {
-        return fn(...$args): bool => !$callback(...$args);
+        return static fn(...$args): bool => !$callback(...$args);
     }
 
     /**
@@ -1342,14 +1342,14 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
     protected static function valueExtractor(array|Closure|string|null $path): Closure
     {
         if ($path === null) {
-            return fn(mixed $value): mixed => $value;
+            return static fn(mixed $value): mixed => $value;
         }
 
         if ($path instanceof Closure) {
             return $path;
         }
 
-        return function(mixed $value) use ($path): mixed {
+        return static function(mixed $value) use ($path): mixed {
             $paths = is_array($path) ? $path : explode('.', $path);
             foreach ($paths as $path) {
                 if ($path === null) {
