@@ -61,7 +61,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable
 
     public const SORT_STRING = SORT_STRING;
 
-    protected array|Closure $source;
+    protected readonly array|Closure $source;
 
     /**
      * Create an empty collection.
