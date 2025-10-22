@@ -13,6 +13,7 @@ use Generator;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Stringable;
 use Throwable;
 use Traversable;
 
@@ -46,7 +47,7 @@ use const SORT_STRING;
 /**
  * Collection
  */
-class Collection implements Countable, IteratorAggregate, JsonSerializable
+class Collection implements Countable, IteratorAggregate, JsonSerializable, Stringable
 {
     use MacroTrait;
     use StaticMacroTrait;
