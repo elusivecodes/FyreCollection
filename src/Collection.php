@@ -13,6 +13,7 @@ use Generator;
 use Iterator;
 use IteratorAggregate;
 use JsonSerializable;
+use Override;
 use Stringable;
 use Throwable;
 use Traversable;
@@ -145,6 +146,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable, Stri
      *
      * @return string The JSON encoded string.
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->toJson();
@@ -300,6 +302,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable, Stri
      *
      * @return int The number of items in the collection.
      */
+    #[Override]
     public function count(): int
     {
         if (is_array($this->source)) {
@@ -525,6 +528,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable, Stri
      *
      * @return Iterator The collection Iterator.
      */
+    #[Override]
     public function getIterator(): Iterator
     {
         if (is_array($this->source)) {
@@ -664,6 +668,7 @@ class Collection implements Countable, IteratorAggregate, JsonSerializable, Stri
      *
      * @return array The array for serializing.
      */
+    #[Override]
     public function jsonSerialize(): array
     {
         return array_map(static function(mixed $item): mixed {
